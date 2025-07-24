@@ -1,0 +1,245 @@
+```json
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Project Build-a-Sophisticated API",
+    "version": "v1",
+    "description": "API for contract review and management platform"
+  },
+  "servers": [
+    {
+      "url": "https://api.example.com/v1",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "OK" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": { "type": "string" },
+                  "password": { "type": "string" }
+                },
+                "required": ["username", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" }
+        },
+        "security": []
+      }
+    },
+    "/contracts": {
+      "get": {
+        "summary": "Get contracts",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer" },
+            "description": "Page number"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": { "type": "integer" },
+            "description": "Number of contracts per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contracts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Contract" }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create contract",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Contract" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Contract created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Contract" }
+              }
+            }
+          },
+          "400": { "description": "Bad Request" }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/contracts/{id}": {
+      "get": {
+        "summary": "Get contract by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": { "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contract",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Contract" }
+              }
+            }
+          },
+          "404": { "description": "Not Found" }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "Update contract",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": { "type": "integer" },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Contract" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contract updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Contract" }
+              }
+            }
+          },
+          "400": { "description": "Bad Request" },
+          "404": { "description": "Not Found" }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete contract",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": { "type": "integer" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": { "description": "No Content" },
+          "404": { "description": "Not Found" }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Contract": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "readOnly": true },
+          "name": { "type": "string" },
+          "content": { "type": "string" },
+          "status": { "type": "string", "enum": ["Draft", "Review", "Approved", "Rejected"] }
+        },
+        "required": ["name", "content"]
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
+```
